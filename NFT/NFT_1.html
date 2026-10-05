@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Pixel NFT — HelloPixel History</title>
+    <link rel="stylesheet" href="styles_nft.css">
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.4/dist/web3.min.js"></script>
+    <script src="pixel_nft_abi.js"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div class="glass-container">
+        <header class="app-header">
+            <button type="button" class="back-btn" id="back-btn" aria-label="Назад">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+                <span>Назад</span>
+            </button>
+            <div class="app-header-title">Pixel NFT</div>
+        </header>
+
+        <div class="content">
+            <div class="left-panel">
+                <div class="input-form">
+                    <h1>Input NFT ID</h1>
+                    <div class="network-selector">
+                        <label>
+                            <input type="radio" name="network" value="songbird" checked> Songbird
+                        </label>
+                        <label>
+                            <input type="radio" name="network" value="skale"> Skale
+                        </label>
+                    </div>
+                    <input type="text" id="tokenId" value="" placeholder="Enter Token ID" inputmode="numeric" autocomplete="off">
+                    <button type="button" id="fetch-button">Get Info</button>
+                </div>
+                <div id="result" class="nft-info"></div>
+            </div>
+
+            <div class="right-panel">
+                <div class="nft-image-container">
+                    <h2 id="nft-name">NFT Name</h2>
+                    <div class="nft-collection" id="nft-collection">Collection</div>
+                    <img id="nft-image" src="" class="token-image" alt="NFT Image" decoding="async">
+                    <div class="nft-rarity" id="nft-rarity"></div>
+                </div>
+                <div class="nft-modifiers">
+                    <h3>NFT Modifiers</h3>
+                    <div id="modifiers-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

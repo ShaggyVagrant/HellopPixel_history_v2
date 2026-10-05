@@ -1,0 +1,379 @@
+/* Общие */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+body {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans', sans-serif;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    max-width: 100%;
+    overflow-x: hidden;
+    /* fixed на iOS часто даёт лишний горизонтальный скролл — scroll надёжнее */
+    background: url('../bg-KB84Wn3A.png') center/cover no-repeat scroll;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* Основной контейнер со стеклянным эффектом */
+.glass-container {
+    width: 100%;
+    max-width: min(1280px, 100%);
+    min-width: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    padding: 24px 28px;
+    overflow-x: hidden;
+}
+
+/* Шапка */
+.app-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 24px;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    color: #a3a3a7;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 10px;
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+}
+
+.back-btn svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    fill: none;
+}
+
+.app-header-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.3px;
+}
+
+/* Основная сетка */
+.content {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 32px;
+    min-width: 0;
+    width: 100%;
+}
+
+/* Левая панель */
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0; /* иначе длинный 0x… раздувает колонку */
+}
+
+.input-form {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 20px;
+    padding: 22px 24px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.input-form h1 {
+    font-size: 16px;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 16px;
+    letter-spacing: -0.2px;
+}
+
+.network-selector {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 16px;
+}
+
+.network-selector label {
+    color: #a3a3a7;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.network-selector input[type="radio"] {
+    accent-color: #a62cff;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.input-form input[type="text"] {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    font-size: 15px;
+    outline: none;
+    transition: border 0.2s;
+    margin-bottom: 12px;
+}
+
+.input-form input[type="text"]:focus {
+    border-color: #a62cff;
+}
+
+.input-form input[type="text"]::placeholder {
+    color: #6b6b70;
+}
+
+.input-form button {
+    width: 100%;
+    padding: 12px;
+    background: #a62cff;
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.input-form button:hover {
+    background: #8f1ee0;
+}
+
+.input-form button:active {
+    transform: scale(0.98);
+}
+
+/* Результат (информация об NFT) */
+.nft-info {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+    padding: 18px 22px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    color: #d1d1d6;
+    font-size: 14px;
+    line-height: 1.8;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.nft-info p {
+    margin: 4px 0;
+}
+
+.nft-info b {
+    color: #fff;
+    font-weight: 500;
+}
+
+.nft-info a {
+    color: #7eb6ff;
+    text-decoration: underline;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+}
+
+.nft-info a:hover {
+    color: #a8d0ff;
+}
+
+/* Правая панель */
+.right-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+    width: 100%;
+}
+
+/* Стиль item-box из второго файла - градиент от краёв к центру */
+.nft-image-container {
+    width: 100%;
+    max-width: 460px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.2) 0%, rgba(166, 44, 255, 0.08) 40%, rgba(0, 0, 0, 0.7) 100%);
+    border-radius: 28px;
+    padding: 24px 20px 28px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Название NFT - белое, 16px Inter */
+#nft-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #ffffff;
+    text-align: center;
+    letter-spacing: -0.2px;
+    margin-bottom: 2px;
+}
+
+/* Collection name - A3A3A7 12px Inter */
+.nft-collection {
+    font-size: 12px;
+    color: #a3a3a7;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+/* Редкость */
+.nft-rarity {
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    margin-top: 12px;
+    margin-bottom: 8px;
+}
+
+/* Картинка NFT */
+.token-image {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* Рамки редкости со свечением */
+.rarity-1 { border: 6px solid #ffffff; box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
+.rarity-2 { border: 6px solid #00ff66; box-shadow: 0 0 20px rgba(0, 255, 102, 0.4); }
+.rarity-3 { border: 6px solid #00a2ff; box-shadow: 0 0 20px rgba(0, 162, 255, 0.4); }
+.rarity-4 { border: 6px solid #cc00ff; box-shadow: 0 0 20px rgba(204, 0, 255, 0.4); }
+.rarity-5 { border: 6px solid #ff7700; box-shadow: 0 0 20px rgba(255, 119, 0, 0.4); }
+
+/* Модификаторы */
+.nft-modifiers {
+    width: 100%;
+    max-width: 420px;
+    margin-top: 8px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.nft-modifiers h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgb(126, 161, 202);
+    margin-bottom: 12px;
+    letter-spacing: 0.3px;
+}
+
+#modifiers-list {
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+#modifiers-list div {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(126, 161, 202, 0.08);
+}
+
+#modifiers-list div:last-child {
+    border-bottom: none;
+}
+
+/* Адаптив */
+@media (max-width: 780px) {
+    body {
+        padding: 12px;
+        align-items: flex-start;
+    }
+
+    .glass-container {
+        padding: 16px;
+        border-radius: 20px;
+    }
+
+    .content {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .nft-image-container {
+        max-width: 100%;
+    }
+
+    .token-image {
+        max-width: min(280px, 100%);
+    }
+
+    .nft-modifiers {
+        max-width: 100%;
+    }
+
+    .network-selector {
+        flex-wrap: wrap;
+        gap: 12px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 8px;
+    }
+
+    .glass-container {
+        padding: 12px;
+        border-radius: 16px;
+    }
+
+    .app-header-title {
+        font-size: 17px;
+    }
+
+    .input-form {
+        padding: 16px;
+    }
+
+    .token-image {
+        max-width: min(220px, 100%);
+    }
+
+    /* рамки редкости на узком экране тоньше — меньше «вылезания» */
+    .rarity-1, .rarity-2, .rarity-3, .rarity-4, .rarity-5 {
+        border-width: 4px;
+    }
+}
