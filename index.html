@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="app-version" content="0.2.1">
+    <title>HelloPixel History — История транзакций токенов Hello Pixel</title>
+    <meta name="description" content="Бесплатный инструмент для просмотра истории транзакций PXLNFT, PXLs, PXLD и других токенов Hello Pixel по адресу кошелька в сети Songbird. Фильтры по дате, типу операций и токенам.">
+    <link rel="canonical" href="https://shaggyvagrant.github.io/HelloPixel_history/" />
+
+    <!-- Open Graph (Telegram, Discord, Facebook…) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:site_name" content="HelloPixel History" />
+    <meta property="og:title" content="HelloPixel History — История транзакций токенов Hello Pixel" />
+    <meta property="og:description" content="Бесплатный инструмент для просмотра истории транзакций PXLNFT, PXLs, PXLD и других токенов Hello Pixel по адресу кошелька в сети Songbird." />
+    <meta property="og:url" content="https://shaggyvagrant.github.io/HelloPixel_history/" />
+    <meta property="og:image" content="https://shaggyvagrant.github.io/HelloPixel_history/og-image.png" />
+    <meta property="og:image:secure_url" content="https://shaggyvagrant.github.io/HelloPixel_history/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="HelloPixel History — история транзакций Hello Pixel" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="HelloPixel History — История транзакций токенов Hello Pixel" />
+    <meta name="twitter:description" content="История транзакций токенов Hello Pixel по адресу кошелька в сети Songbird." />
+    <meta name="twitter:image" content="https://shaggyvagrant.github.io/HelloPixel_history/og-image.png" />
+    <meta name="twitter:image:alt" content="HelloPixel History — история транзакций Hello Pixel" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="HelloPixel History" />
+    <meta name="theme-color" content="#0f172a" />
+
+    <link rel="stylesheet" href="style.css" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "HelloPixel History",
+      "description": "Инструмент для просмотра истории транзакций токенов Hello Pixel в сети Songbird",
+      "url": "https://shaggyvagrant.github.io/HelloPixel_history/",
+      "applicationCategory": "Utility",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+</head>
+<body>
+<div class="container">
+        <div class="card">
+            <h1>🔍 HelloPixel History</h1>
+            <p class="subtitle">Получение истории транзакций токенов по адресу</p>
+
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <input
+                        type="text"
+                        id="addressInput"
+                        list="addressHistory"
+                        placeholder="Введите адрес кошелька (0x...)"
+                        value=""
+                        maxlength="42"
+                        spellcheck="false"
+                        autocomplete="off"
+                        autocapitalize="off"
+                        inputmode="text"
+                        pattern="0x[a-fA-F0-9]{40}"
+                        title="EVM-адрес: 0x и 40 шестнадцатеричных символов"
+                    />
+                    <button type="button" id="clearAddressBtn" class="clear-address-btn" title="Очистить адрес" aria-label="Очистить адрес" hidden>×</button>
+                    <datalist id="addressHistory"></datalist>
+                </div>
+                <select id="tokenTypeFilter">
+                    <option value="">Все типы токенов</option>
+                    <option value="ERC-20">ERC-20</option>
+                    <option value="ERC-721">ERC-721 (NFT)</option>
+                    <option value="ERC-1155">ERC-1155</option>
+                </select>
+                <button id="fetchBtn">Получить историю</button>
+            </div>
+
+            <div id="statusMessage" class="status-message"></div>
+
+            <!-- Статистика -->
+<div id="statsBlock" class="stats" style="display: none;">
+    <div id="statsMain">
+        <span>📊 Всего трансферов: <strong id="totalCount">0</strong></span>
+        <span>🪙 Показано: <strong id="displayedCount">0</strong></span>
+    </div>
+    <div id="statsExtra" style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <!-- Сюда будет вставляться расширенная статистика -->
+    </div>
+</div>
+
+
+<!-- Блок "Итоги по токенам" -->
+<div class="stats-summary">
+    <div class="summary-header" id="summaryHeader">
+        <span class="summary-title">📊 Итоги по токенам</span>
+        <button class="summary-toggle" id="summaryToggle" aria-label="Свернуть/развернуть">
+            <svg class="toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </button>
+    </div>
+    <div class="summary-content" id="summaryContent">
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Токен</th>
+                    <th>Приход</th>
+                    <th>Расход</th>
+                    <th>Итог</th>
+                </tr>
+            </thead>
+            <tbody id="summaryBody">
+                <tr><td colspan="4" class="empty-state">Нет данных</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+            <!-- Фильтры -->
+            <div class="filters">
+                <div class="filters-header" id="filtersHeader">
+                    <span class="filters-title">🔍 Фильтры и инструменты</span>
+                    <button class="filters-toggle" id="filtersToggle" aria-label="Свернуть/развернуть фильтры">
+                        <svg class="toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                <div class="filters-content" id="filtersContent">
+                    <div class="filter-group">
+                        <label>
+                            <input type="checkbox" id="showOnlyIncoming" /> Только входящие
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showOnlyOutgoing" /> Только исходящие
+                        </label>
+                    </div>
+<!-- Фильтр по токену -->
+<div class="filter-group token-filter-group">
+    <span class="filter-label">🏷️ Токен:</span>
+    <select id="tokenSymbolFilter">
+        <option value="all">Все токены</option>
+        <option value="PXLNFT">PXLNFT</option>
+        <option value="PXLs">PXLs</option>
+        <option value="PXLD">PXLD</option>
+    </select>
+</div>
+
+<!-- Фильтр по датам -->
+<div class="filter-group date-filter-group">
+    <span class="filter-label">📅 Период:</span>
+    <div class="date-range-wrapper">
+        <input type="date" id="startDateFilter" class="date-input" />
+        <span class="date-separator">—</span>
+        <input type="date" id="endDateFilter" class="date-input" />
+        <button id="applyDateFilter" class="apply-date-btn">Применить</button>
+        <button id="clearDateFilter" class="clear-date-btn">✕</button>
+    </div>
+</div>
+
+<div class="filter-group sort-filter-group">
+        <span class="filter-label">📊 Сортировка:</span>
+        <div class="sort-wrapper">
+            <label class="sort-option">
+                <input type="radio" name="sortOrder" value="desc" checked /> Новые сверху
+            </label>
+            <label class="sort-option">
+                <input type="radio" name="sortOrder" value="asc" /> Старые сверху
+            </label>
+        </div>
+    </div>
+
+
+<div class="filter-group method-filters">
+    <span class="filter-label">📋 Методы вызова:</span>
+                        <label>
+                            <input type="checkbox" class="method-checkbox" data-method="all" checked /> Все
+                        </label>
+    <!-- Группа: От команды -->
+    <div class="filter-group-collapsible">
+        <div class="group-header" data-group="command">
+            <span class="group-title">👑 От команды</span>
+            <button class="group-toggle" aria-label="Свернуть/развернуть группу">
+                <svg class="group-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+        </div>
+        <div class="group-content">
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="mintForOne" /> От команды (ЛБ, за рефов)
+            </label>
+        </div>
+    </div>
+
+    <!-- Группа: Кузня -->
+    <div class="filter-group-collapsible">
+        <div class="group-header" data-group="forge">
+            <span class="group-title">⚒️ Кузня</span>
+            <button class="group-toggle" aria-label="Свернуть/развернуть группу">
+                <svg class="group-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+        </div>
+        <div class="group-content">
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="burn" /> Крафт
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="mint" /> Запаковка пыли
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="raspakovka_pyli" /> Распаковка пыли
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="craft" /> Крафт по рецепту
+            </label>
+        </div>
+    </div>
+
+    <!-- Группа: Клеймы -->
+    <div class="filter-group-collapsible">
+        <div class="group-header" data-group="claims">
+            <span class="group-title">🎯 Клеймы</span>
+            <button class="group-toggle" aria-label="Свернуть/развернуть группу">
+                <svg class="group-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+        </div>
+        <div class="group-content">
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="start" /> Запуск УС
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="claimForUser" /> Автоклейм
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="stop" /> Стоп УС
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="claimReward" /> Ручной клейм
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="returnDroneAndClaimReward" /> Клейм пыли
+            </label>
+        </div>
+    </div>
+
+    <!-- Группа: Купить/продать -->
+    <div class="filter-group-collapsible">
+        <div class="group-header" data-group="market">
+            <span class="group-title">💰 Купить/продать</span>
+            <button class="group-toggle" aria-label="Свернуть/развернуть группу">
+                <svg class="group-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+        </div>
+        <div class="group-content">
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="createOrder" /> Выставлен на продажу
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="executeOrder" /> Куплен на рынке
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="executeOrderInternal" /> Продан на рынке
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="cancelOrder" /> Снято с продажи
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="purchaseChestForPXLs" /> Куплен дрон за PXLs
+            </label>
+        </div>
+    </div>
+
+    <!-- Группа: Майнер и инвентарь -->
+    <div class="filter-group-collapsible">
+        <div class="group-header" data-group="miner">
+            <span class="group-title">⛏️ Майнер и инвентарь</span>
+            <button class="group-toggle" aria-label="Свернуть/развернуть группу">
+                <svg class="group-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+        </div>
+        <div class="group-content">
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="prokachka_hranilisha" /> Прокачка хранилища
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="prokachka_dreli" /> Прокачка дрели
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="upgradeMine" /> Прокачка шахты
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="unlockSlot" /> Открытие слота
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="equip" /> Надеть NFT
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="unequip" /> Снять NFT
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="claimFreeChest" /> Открыть сундук
+            </label>
+        </div>
+    </div>
+
+    <!-- Группа: Синдикаты -->
+    <div class="filter-group-collapsible">
+        <div class="group-header" data-group="syndicate">
+            <span class="group-title">🏛️ Синдикаты</span>
+            <button class="group-toggle" aria-label="Свернуть/развернуть группу">
+                <svg class="group-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+        </div>
+        <div class="group-content">
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="popolnenie_sindikata" /> Пополнение синдиката
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="lock" /> Земля в аренду
+            </label>
+            <label>
+                <input type="checkbox" class="method-checkbox" data-method="unlock" /> Вернуть землю
+            </label>
+        </div>
+    </div>
+
+<!-- Группа: Расширенные фильтры -->
+<div class="filter-group-collapsible">
+    <div class="group-header" data-group="advanced">
+        <span class="group-title">🔧 Advanced</span>
+        <button class="group-toggle" aria-label="Свернуть/развернуть группу">
+            <svg class="group-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </button>
+    </div>
+    <div class="group-content">
+<div class="advanced-tools">
+    <label class="advanced-checkbox">
+        <input type="checkbox" id="enableNFT" /> Включить NFT
+    </label>
+    <div class="rarity-filter-wrapper" id="rarityFilterWrapper" style="display: none;">
+        <label class="rarity-filter-label">Редкость:</label>
+        <select id="rarityFilter">
+            <option value="all">Все</option>
+            <option value="1">Common</option>
+            <option value="2">Uncommon</option>
+            <option value="3">Rare</option>
+            <option value="4">Epic</option>
+            <option value="5">Legendary</option>
+        </select>
+    </div>
+<!-- В разделе Advanced -->
+<div class="filter-group">
+    <label>
+        <input type="checkbox" id="showOnlyInternal" class="tx-type-filter" /> Только internal
+    </label>
+    <label>
+        <input type="checkbox" id="showOnlyNormal" class="tx-type-filter" /> Только обычные
+    </label>
+</div>
+    <label class="advanced-checkbox">
+        <input type="checkbox" id="enableSummary"/> Просчитывать итоги
+    </label>
+    <label class="advanced-checkbox">
+        <input type="checkbox" id="enableSound" checked /> Звук при загрузке
+    </label>
+    <button id="clearCacheBtn" class="advanced-btn" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #ef4444;">
+        🔄 Обновить приложение
+    </button>
+</div>
+    </div>
+</div>
+</div>
+                </div>
+            </div>
+
+            <!-- Пагинация СВЕРХУ -->
+            <div id="paginationControlsTop" class="pagination" style="display: none;">
+                <button class="firstPageBtn" disabled>⏮ Первая</button>
+                <button class="prevPageBtn" disabled>◀ Назад</button>
+                <div class="page-numbers" id="pageNumbersTop"></div>
+                <button class="nextPageBtn">Вперед ▶</button>
+                <button class="lastPageBtn">Последняя ⏭</button>
+                <button id="loadMoreBtn" class="load-more-btn">Загрузить ещё</button>
+            </div>
+
+            <!-- Таблица -->
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Хэш транзакции</th>
+                            <th>Отправитель</th>
+                            <th>Получатель</th>
+                            <th>Сумма</th>
+                            <th>Токен</th>
+                            <th>Тип</th>
+                            <th>Метод вызова</th>
+                            <th>Token ID</th>
+                            <th>Цена <span id="networkTokenLabel">SGB</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="transfersBody">
+                        <tr id="emptyRow">
+                            <td colspan="10" style="text-align: center; padding: 40px; color: #9ca3af;">
+                                Введите адрес и нажмите "Получить историю"
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Пагинация СНИЗУ -->
+            <div id="paginationControlsBottom" class="pagination" style="display: none;">
+                <button class="firstPageBtn" disabled>⏮ Первая</button>
+                <button class="prevPageBtn" disabled>◀ Назад</button>
+                <div class="page-numbers" id="pageNumbersBottom"></div>
+                <button class="nextPageBtn">Вперед ▶</button>
+                <button class="lastPageBtn">Последняя ⏭</button>
+                <button id="loadMoreBtnBottom" class="load-more-btn">Загрузить ещё</button>
+            </div>
+            <!-- ===== ФУТЕР ===== -->
+            <footer class="site-footer">
+                <div class="footer-links">
+                    <a href="about.html">О приложении</a>
+                    <span class="footer-separator">•</span>
+                    <a href="contacts.html">Контакты</a>
+                </div>
+                <div class="footer-copy">
+                    Community-инструмент для Hello Pixel · Songbird Network
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Service Worker: только на проде (не localhost / 127.0.0.1) -->
+    <script>
+        (function () {
+            if (!('serviceWorker' in navigator)) return;
+
+            var host = location.hostname;
+            var isLocal = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+
+            if (isLocal) {
+                // Dev: снять старые регистрации, чтобы не тянули устаревший кеш
+                navigator.serviceWorker.getRegistrations().then(function (regs) {
+                    regs.forEach(function (reg) { reg.unregister(); });
+                });
+                if ('caches' in window) {
+                    caches.keys().then(function (names) {
+                        names.forEach(function (name) { caches.delete(name); });
+                    });
+                }
+                console.log('[SW] localhost — Service Worker отключён');
+                return;
+            }
+
+            navigator.serviceWorker.register('/sw.js')
+                .then(function () {
+                    console.log('Service Worker зарегистрирован успешно');
+                })
+                .catch(function (error) {
+                    console.log('Ошибка регистрации Service Worker:', error);
+                });
+        })();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="NFT/pixel_nft_abi.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
